@@ -11,7 +11,7 @@ public class EnemyMovement : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         StartCoroutine(FollowPath());
-	}
+    }
 
     private IEnumerator FollowPath() {
         print("Starting patrol...");
