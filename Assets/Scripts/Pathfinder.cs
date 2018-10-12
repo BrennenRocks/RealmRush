@@ -61,9 +61,7 @@ public class Pathfinder : MonoBehaviour {
 
     private void Pathfind() {
         List<Waypoint> seen = new List<Waypoint>();
-        List<Waypoint> open = new List<Waypoint>();
         queue.Enqueue(startWaypoint);
-        open.Add(startWaypoint);
 
         while (queue.Count > 0) {
             Waypoint curr = queue.Dequeue();
@@ -83,10 +81,16 @@ public class Pathfinder : MonoBehaviour {
                     // do nothing
                 }
 
-                if (neighbor != null && !seen.Contains(neighbor) && !open.Contains(neighbor)) {
-                    neighbor.SetTopColor(Color.blue);
-                    queue.Enqueue(neighbor);
-                    open.Add(neighbor);
+                if (neighbor != null) {
+                    if (neighbor == endWaypoint) {
+                        print("solution found in neighbor");
+                        return;
+                    }
+
+                    if (!seen.Contains(neighbor) && !queue.Contains(neighbor)) {
+                        neighbor.SetTopColor(Color.blue);
+                        queue.Enqueue(neighbor);
+                    }
                 }
             }
         }
