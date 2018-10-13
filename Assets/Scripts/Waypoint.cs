@@ -5,8 +5,9 @@ using UnityEngine;
 public class Waypoint : MonoBehaviour {
 
     private const int gridSize = 10;
-
     private Vector2Int gridPos;
+
+    public Waypoint parent;
 
     public int GetGridSize() {
         return gridSize;

@@ -10,6 +10,7 @@ public class Pathfinder : MonoBehaviour {
 
     private Dictionary<Vector2Int, Waypoint> grid = new Dictionary<Vector2Int, Waypoint>();
     private Queue<Waypoint> queue = new Queue<Waypoint>();
+    private List<Waypoint> path = new List<Waypoint>();
 
     private Vector2Int[] directions = {
         Vector2Int.up,
@@ -18,19 +19,14 @@ public class Pathfinder : MonoBehaviour {
         Vector2Int.left
     };
 
-	// Use this for initialization
-	void Start () {
-        LoadBlocks();
-        ColorStartAndEnd();
-        Pathfind();
-        //ExploreNeighbors();
-	}
+    public List<Waypoint> GetPath() {
+        if (path.Count == 0) {
+            LoadBlocks();
+            BreadthFirstSearch();
+        }
 
-
-    // Update is called once per frame
-    void Update () {
-		
-	}
+        return path;
+    }
 
     private void LoadBlocks() {
         Waypoint[] waypoints = FindObjectsOfType<Waypoint>();
@@ -43,56 +39,37 @@ public class Pathfinder : MonoBehaviour {
         }
     }
 
-    private void ColorStartAndEnd() {
-        startWaypoint.SetTopColor(Color.green);
-        endWaypoint.SetTopColor(Color.red);
-    }
-
-    private void ExploreNeighbors() {
-        foreach (Vector2Int direction in directions) {
-            Vector2Int neighbor = startWaypoint.GetGridPos() + direction;
-            try {
-                grid[neighbor].SetTopColor(Color.blue);
-            } catch {
-                // do nothing
-            }
-        }
-    }
-
-    private void Pathfind() {
+    private void BreadthFirstSearch() {
         List<Waypoint> seen = new List<Waypoint>();
         queue.Enqueue(startWaypoint);
 
         while (queue.Count > 0) {
             Waypoint curr = queue.Dequeue();
             seen.Add(curr);
-            print(curr);
             if (curr == endWaypoint) {
-                // Get the path
-                print("solution");
+                CreateSolution(curr);
                 break;
             }
 
             foreach(Vector2Int direction in directions) {
-                Waypoint neighbor = null;
-                try {
-                    neighbor = grid[curr.GetGridPos() + direction];
-                } catch {
-                    // do nothing
-                }
-
-                if (neighbor != null) {
-                    if (neighbor == endWaypoint) {
-                        print("solution found in neighbor");
-                        return;
-                    }
+                if (grid.ContainsKey(curr.GetGridPos() + direction)) {
+                    Waypoint neighbor = grid[curr.GetGridPos() + direction];
 
                     if (!seen.Contains(neighbor) && !queue.Contains(neighbor)) {
-                        neighbor.SetTopColor(Color.blue);
+                        neighbor.parent = curr;
                         queue.Enqueue(neighbor);
                     }
                 }
             }
         }
+    }
+
+    private void CreateSolution(Waypoint current) {
+        while (current != null) {
+            path.Add(current);
+            current = current.parent;
+        }
+
+        path.Reverse();
     }
 }
