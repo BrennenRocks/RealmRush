@@ -6,15 +6,19 @@ using UnityEngine;
 public class Tower : MonoBehaviour {
 
     [SerializeField]
-    private Transform objectToPan, targetEnemy;
+    private Transform objectToPan;
 
     [SerializeField]
     private int range = 30;
 
     [SerializeField]
     private ParticleSystem ptcProjectile;
-	
-	void Update () {
+
+    private Transform targetEnemy;
+    public Waypoint waypoint;
+
+    void Update () {
+        SetTargetEnemy();
         if (targetEnemy) {
             objectToPan.LookAt(targetEnemy);
             FireAtEnemy();
@@ -22,6 +26,27 @@ public class Tower : MonoBehaviour {
             Shoot(false);
         }
 	}
+
+    private void SetTargetEnemy() {
+        EnemyDamage[] enemies = FindObjectsOfType<EnemyDamage>();
+        if (enemies.Length == 0) {
+            return;
+        }
+
+        Transform closestEnemy = enemies[0].transform;
+        foreach (EnemyDamage enemy in enemies) {
+            closestEnemy = GetClosestEnemy(closestEnemy, enemy.transform);
+        }
+
+        targetEnemy = closestEnemy;
+    }
+
+    private Transform GetClosestEnemy(Transform a, Transform b) {
+        float distToA = Vector3.Distance(transform.position, a.position);
+        float distToB = Vector3.Distance(transform.position, b.position);
+
+        return distToA < distToB ? a : b;
+    }
 
     private void FireAtEnemy() {
         float distanceToEnemy = Vector3.Distance(targetEnemy.transform.position, gameObject.transform.position);

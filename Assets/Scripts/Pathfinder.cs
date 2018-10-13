@@ -67,6 +67,7 @@ public class Pathfinder : MonoBehaviour {
     private void CreateSolution(Waypoint current) {
         while (current != null) {
             path.Add(current);
+            current.isPlaceable = false;
             current = current.parent;
         }
 

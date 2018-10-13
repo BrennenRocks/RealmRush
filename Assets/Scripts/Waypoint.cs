@@ -6,11 +6,17 @@ public class Waypoint : MonoBehaviour {
 
     private const int gridSize = 10;
     private Vector2Int gridPos;
+    private TowerFactory towerFactory;
 
     public Waypoint parent;
+    public bool isPlaceable = true;
 
     public int GetGridSize() {
         return gridSize;
+    }
+
+    private void Start() {
+        towerFactory = FindObjectOfType<TowerFactory>();
     }
 
     public Vector2Int GetGridPos() {
@@ -20,7 +26,9 @@ public class Waypoint : MonoBehaviour {
         );
     }
 
-    public void SetTopColor(Color color) {
-        transform.Find("Top").GetComponent<MeshRenderer>().material.color = color;
+    private void OnMouseOver() {
+        if (Input.GetMouseButton(0) && isPlaceable) {
+            towerFactory.AddTower(this);
+        }
     }
 }

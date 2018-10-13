@@ -9,11 +9,13 @@ public class EnemyDamage : MonoBehaviour {
     private Collider collisionMesh;
 
     [SerializeField]
+    private ParticleSystem pfbHitParticle, pfbDeathParticle;
+
+    [SerializeField]
     private int health = 10;
 
 	// Use this for initialization
 	void Start () {
-		
 	}
 
     private void OnParticleCollision(GameObject other) {
@@ -22,12 +24,17 @@ public class EnemyDamage : MonoBehaviour {
 
     private void ProcessHit() {
         health -= 1;
+        pfbHitParticle.Play();
         if (health <= 0) {
             Death();
         }
     }
 
     private void Death() {
+        ParticleSystem vfx = Instantiate(pfbDeathParticle, transform.position, Quaternion.identity);
+        vfx.Play();
+        Destroy(vfx.gameObject, vfx.main.duration);
+
         Destroy(gameObject);
     }
 }
