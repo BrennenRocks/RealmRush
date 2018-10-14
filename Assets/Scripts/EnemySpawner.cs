@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemySpawner : MonoBehaviour {
 
@@ -18,13 +19,27 @@ public class EnemySpawner : MonoBehaviour {
     [SerializeField]
     private EnemyMovement pfbEnemy;
 
+    [SerializeField]
+    private Text txtScore;
+
+    [SerializeField]
+    private AudioClip sfxSpawnedEnemy;
+
+    private int score = 0;
+
 	// Use this for initialization
 	void Start () {
         StartCoroutine(SpawnEnemies());
+        txtScore.text = score.ToString();
 	}
 
     private IEnumerator SpawnEnemies() {
         for (int i = 0; i < numberToSpawn; i++) {
+            score++;
+            txtScore.text = score.ToString();
+
+            GetComponent<AudioSource>().PlayOneShot(sfxSpawnedEnemy);
+
             EnemyMovement newEnemy = Instantiate(pfbEnemy, transform.position, Quaternion.identity);
             newEnemy.transform.parent = enemyParentTransform;
             yield return new WaitForSeconds(secondsBetweenSpawn);

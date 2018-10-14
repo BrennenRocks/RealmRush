@@ -5,8 +5,17 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
+    [SerializeField]
+    private float movementSpeed = .5f;
+
+    [SerializeField]
+    private ParticleSystem pfbGoalParticle;
+
+    private PlayerHealth playerHealth;
+
+    // Use this for initialization
+    void Start () {
+        playerHealth = FindObjectOfType<PlayerHealth>();
         Pathfinder pathfinder = FindObjectOfType<Pathfinder>();
         List<Waypoint> path = pathfinder.GetPath();
         StartCoroutine(FollowPath(path));
@@ -15,12 +24,17 @@ public class EnemyMovement : MonoBehaviour {
     private IEnumerator FollowPath(List<Waypoint> path) {
         foreach (Waypoint waypoint in path) {
             transform.position = waypoint.transform.position;
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(movementSpeed);
         }
+        Death();
     }
 
-    // Update is called once per frame
-    void Update () {
-		
-	}
+    private void Death() {
+        ParticleSystem vfx = Instantiate(pfbGoalParticle, transform.position, Quaternion.identity);
+        vfx.Play();
+        Destroy(vfx.gameObject, vfx.main.duration);
+
+        Destroy(gameObject);
+        playerHealth.BaseHit();
+    }
 }

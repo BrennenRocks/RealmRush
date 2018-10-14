@@ -5,18 +5,20 @@ using UnityEngine;
 
 public class EnemyDamage : MonoBehaviour {
 
-    [SerializeField]
-    private Collider collisionMesh;
+    [SerializeField] private Collider collisionMesh;
 
-    [SerializeField]
-    private ParticleSystem pfbHitParticle, pfbDeathParticle;
+    [SerializeField] private ParticleSystem pfbHitParticle;
+    [SerializeField] private ParticleSystem pfbDeathParticle;
 
-    [SerializeField]
-    private int health = 10;
+    [SerializeField] private int health = 10;
 
-	// Use this for initialization
-	void Start () {
-	}
+    [SerializeField] private AudioClip sfxEnemyHit;
+
+    AudioSource audioSource;
+
+    private void Start() {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     private void OnParticleCollision(GameObject other) {
         ProcessHit();
@@ -25,6 +27,7 @@ public class EnemyDamage : MonoBehaviour {
     private void ProcessHit() {
         health -= 1;
         pfbHitParticle.Play();
+        audioSource.PlayOneShot(sfxEnemyHit);
         if (health <= 0) {
             Death();
         }
